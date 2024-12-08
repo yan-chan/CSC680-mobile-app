@@ -23,7 +23,7 @@ struct Cafe: View {
     
     // The map size
     let mapWidth: CGFloat = 400
-    let mapHeight: CGFloat = 400
+    let mapHeight: CGFloat = 600
     
     // Functions for random item spawning and avatar movement
     func spawnItem() {
