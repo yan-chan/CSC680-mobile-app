@@ -57,7 +57,7 @@ struct Gamble: View {
             
             // If all symbols match, win money
             if self.slot1 == self.slot2 && self.slot2 == self.slot3 {
-                money += 50 // Winning
+                money += 500 // Winning
             }
         }
     }
