@@ -101,17 +101,19 @@ struct Cafe: View {
                 .padding()
             
             ZStack {
-                // Map background
-                Rectangle()
-                    .fill(Color.pink)
+                // Map background - Use Image for the background map
+                Image("Map1")  // Replace "Map1" with the actual name of your map image
+                    .resizable()
+                    .scaledToFill()  // Scale to fill the frame (can also use .scaledToFit() if you prefer)
                     .frame(width: mapWidth, height: mapHeight)
-                    .overlay(
-                        // Add the avatar
-                        Circle()
-                            .fill(Color.blue)
-                            .frame(width: 30, height: 30)
-                            .position(avatar.position)
-                    )
+                    .clipped()  // Ensure the image is clipped to the map size
+                
+                // Add the avatar image
+                Image("p1")  // Replace "p1_image" with the avatar image name
+                    .resizable()
+                    .scaledToFit()  // Maintain aspect ratio of the image
+                    .frame(width: 30, height: 30)  // Adjust the avatar size
+                    .position(avatar.position)
                 
                 // Items on the map
                 ForEach(items) { item in
