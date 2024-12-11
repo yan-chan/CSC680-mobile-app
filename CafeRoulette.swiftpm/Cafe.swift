@@ -15,7 +15,7 @@ struct Cafe: View {
     @State private var items: [Item] = []  // List of spawned items
     @State private var timer: Timer?
     
-    let mapWidth: CGFloat = 650
+    let mapWidth: CGFloat = 800
     let mapHeight: CGFloat = 600
     
     // Function to spawn random items on the map

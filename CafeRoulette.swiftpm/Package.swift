@@ -8,17 +8,17 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "My App",
+    name: "CafeRoulette",
     platforms: [
         .iOS("16.3")
     ],
     products: [
         .iOSApplication(
-            name: "My App",
+            name: "CafeRoulette",
             targets: ["AppModule"],
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .running),
+            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.yellow),
             supportedDeviceFamilies: [
                 .pad,
