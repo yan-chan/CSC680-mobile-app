@@ -1,12 +1,18 @@
 import SwiftUI
 
-// Gacha View: Allows the user to unlock a new recipe by spending 50 money
 struct Gacha: View {
     @Binding var money: Int
-    @Binding var avatar: Avatar  // Pass avatar to track unlocked recipes
-    @State private var popUpMessage: String? = nil  // Variable to store pop-up message
-    @State private var showPopUp: Bool = false  // To control the pop-up visibility
-    @State private var buttonScale: CGFloat = 1.0  // For button animation effect
+    @Binding var avatar: Avatar  
+    @State private var popUpMessage: String? = nil  
+    @State private var showPopUp: Bool = false 
+    @State private var buttonScale: CGFloat = 1.0 
+    @State private var showAnimation: Bool = false
+    @State private var animationType: AnimationType = .none
+    @State private var animationOpacity: Double = 1.0 
+    
+    enum AnimationType {
+        case win, lose, none
+    }
     
     var body: some View {
         ZStack {
@@ -72,6 +78,49 @@ struct Gacha: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
+            
+            // Animation in the center (higher up on the screen)
+            if showAnimation {
+                VStack {
+                    if animationType == .win {
+                        // Win animation (green checkmark)
+                        Text("✅")
+                            .font(.system(size: 100))
+                            .foregroundColor(.green)
+                            .scaleEffect(showAnimation ? 1.5 : 1)
+                            .opacity(animationOpacity)  // Bind opacity for fading
+                            .onAppear {
+                                // Reset opacity to full at the beginning
+                                animationOpacity = 1.0
+                                
+                                // Fade out after 1 second
+                                withAnimation(.easeOut(duration: 1).delay(1)) {
+                                    animationOpacity = 0.0
+                                }
+                            }
+                            .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: showAnimation)
+                    } else if animationType == .lose {
+                        // Lose animation (red cross)
+                        Text("❌")
+                            .font(.system(size: 100))
+                            .foregroundColor(.red)
+                            .scaleEffect(showAnimation ? 1.5 : 1)
+                            .opacity(animationOpacity)  // Bind opacity for fading
+                            .onAppear {
+                                // Reset opacity to full at the beginning
+                                animationOpacity = 1.0
+                                
+                                // Fade out after 1 second
+                                withAnimation(.easeOut(duration: 1).delay(1)) {
+                                    animationOpacity = 0.0
+                                }
+                            }
+                            .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: showAnimation)
+                    }
+                }
+                .padding(.top, 50) // Adjust to make the animation higher up
+                .transition(.scale)
+            }
         }
     }
     
@@ -107,17 +156,29 @@ struct Gacha: View {
                     let refundAmount = 50 * 0.25 // 25% of 50 money = 12.5
                     money += Int(refundAmount) // Add the refund money back
                     popUpMessage = "\(randomRecipe.name) is already unlocked! You've received 25 money."
+                    animationType = .lose 
                 } else {
                     // Add the unlocked recipe to avatar's unlockedRecipes if it's not already unlocked
                     avatar.unlockedRecipes.append(randomRecipe)
                     popUpMessage = "\(randomRecipe.name) recipe unlocked!"
+                    animationType = .win
                 }
                 
                 // Show the pop-up message
                 showPopUp = true
+                
+                // Reset animation state before showing it again
+                animationOpacity = 1.0 
+                showAnimation = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    showAnimation = true 
+                }
+                
             } else {
                 // Optionally show a failure message or handle other cases
                 print("Better luck next time!")
+                animationType = .lose
+                showAnimation = true 
             }
         }
     }

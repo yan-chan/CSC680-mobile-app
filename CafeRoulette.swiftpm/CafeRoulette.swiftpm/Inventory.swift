@@ -18,23 +18,6 @@ struct Inventory: View {
                 .font(.title)
                 .padding()
             
-            // Show inventory counts
-            VStack(alignment: .leading) {
-                Text("Inventory:")
-                Text("Flour: \(inventory["Flour"] ?? 0)")
-                Text("Sugar: \(inventory["Sugar"] ?? 0)")
-                Text("Water: \(inventory["Water"] ?? 0)")
-                Text("Coffee Beans: \(inventory["Coffee Beans"] ?? 0)")
-                Text("Milk: \(inventory["Milk"] ?? 0)")
-                Text("Butter: \(inventory["Butter"] ?? 0)")
-                Text("Eggs: \(inventory["Eggs"] ?? 0)")
-                Text("Almond Flour: \(inventory["Almond Flour"] ?? 0)")
-                Text("Yeast: \(inventory["Yeast"] ?? 0)")
-                Text("Fruit: \(inventory["Fruit"] ?? 0)")
-                Text("Ice: \(inventory["Ice"] ?? 0)")
-                Text("Yogurt: \(inventory["Yogurt"] ?? 0)")
-            }
-            .padding()
             
             // Show ingredients that can drop
             VStack(alignment: .leading) {
