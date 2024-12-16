@@ -13,11 +13,6 @@ struct Gamble: View {
         VStack {
             // Title and Money Display
             HStack {
-                Text("Slot Machine")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.leading)
                 Spacer()
                 Text("Money: \(money)")
                     .font(.title)
@@ -26,7 +21,8 @@ struct Gamble: View {
                     .padding(.trailing)
             }
             .padding(.top, 40)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.purple]), startPoint: .top, endPoint: .bottom))
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.blue.opacity(0.4)]), startPoint: .top, endPoint: .bottom))
+            .cornerRadius(30, antialiased: true)
             
             Spacer()
             
@@ -39,9 +35,9 @@ struct Gamble: View {
                     SlotSymbolView(symbol: slot3)
                 }
                 .padding()
-                .background(Color.white) // Slot machine background
+                .background(Color.white.opacity(0.8)) // Slot machine background
                 .cornerRadius(20)
-                .shadow(radius: 10)
+                .shadow(radius: 12)
             }
             .padding()
             
@@ -49,14 +45,15 @@ struct Gamble: View {
             if !winMessage.isEmpty {
                 Text(winMessage)
                     .font(.title)
-                    .foregroundColor(.green)
+                    .foregroundColor(winMessage.contains("Win") ? .green : .red)
                     .padding(.top, 20)
                     .transition(.opacity)
+                    .animation(.easeInOut, value: winMessage)
             }
             
             Spacer()
             
-            // Spin Button
+            // Spin Button with Light Blue Theme
             Button(action: {
                 if money >= 10 {
                     // Spend 10 money to spin
@@ -70,18 +67,18 @@ struct Gamble: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                     .padding()
-                    .background(LinearGradient(gradient: Gradient(colors: [Color.purple, Color.pink]), startPoint: .top, endPoint: .bottom)) // Gradient background
-                    .cornerRadius(25) // Rounded corners
-                    .shadow(radius: 10) // Shadow for 3D effect
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue, Color.cyan]), startPoint: .top, endPoint: .bottom)) // Gradient background in blue and cyan
+                    .cornerRadius(30) // Rounded corners
+                    .shadow(radius: 10) // Shadow for a soft, elevated look
                     .scaleEffect(isSpinning ? 0.95 : 1.0) // Slight scale effect when pressed
-                    .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0.3), value: isSpinning) // Pressing animation
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0.3), value: isSpinning) // Button press animation
             }
             .padding()
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 40)
-
+            
         }
-        .background(Color("E6E6FA")) // Light lavender color
+        .background(Color("E0F7FA")) // Light blue background color (hex for pastel blue)
         .edgesIgnoringSafeArea(.all) // Ensure background fills the whole screen
         .onChange(of: isSpinning) { newValue in
             if !newValue {
@@ -93,7 +90,6 @@ struct Gamble: View {
         }
     }
     
-    
     // Slot Symbol View to wrap each slot in a styled box
     struct SlotSymbolView: View {
         var symbol: String
@@ -102,9 +98,13 @@ struct Gamble: View {
             Text(symbol)
                 .font(.system(size: 100))
                 .frame(width: 100, height: 100)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(10)
-                .shadow(radius: 5)
+                .background(Color.white.opacity(0.7))
+                .cornerRadius(15)
+                .shadow(radius: 8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(Color.blue.opacity(0.5), lineWidth: 2)
+                )
         }
     }
     

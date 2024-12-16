@@ -10,7 +10,7 @@ struct Item: Identifiable {
 
 struct Cafe: View {
     @Binding var money: Int
-    @Binding var avatar: Avatar  // Pass avatar data to track inventory and unlocked recipes
+    @Binding var avatar: Avatar  // Pass avatar data to track inventory
     
     @State private var items: [Item] = []  // List of spawned items
     @State private var timer: Timer?
@@ -22,12 +22,30 @@ struct Cafe: View {
     func spawnItem() {
         var itemNames = ["Flour", "Sugar", "Water"]
         
-        // If the Coffee recipe is unlocked, include Coffee Beans in itemNames
-        if avatar.unlockedRecipes.contains(where: { $0.name == "Coffee" }) {
-            itemNames.append("Coffee Beans")
+        // Include ingredients of unlocked recipes
+        for recipe in avatar.unlockedRecipes {
+            for ingredient in recipe.ingredients.keys {
+                if !itemNames.contains(ingredient) {
+                    itemNames.append(ingredient)
+                }
+            }
         }
         
-        let itemEmojis = ["Flour": "🍞", "Sugar": "🍬", "Water": "💧", "Coffee Beans": "🫘"]
+        let itemEmojis = [
+            "Flour": "🍞",
+            "Sugar": "🍬",
+            "Water": "💧",
+            "Coffee Beans": "🫘",
+            "Milk": "🥛",
+            "Butter": "🧈",
+            "Eggs": "🥚",
+            "Almond Flour": "🌰",
+            "Yeast": "🍞",
+            "Fruit": "🍓",
+            "Ice": "❄️",
+            "Yogurt": "🍦"
+        ]
+        
         let randomItemName = itemNames.randomElement()!
         let randomItemEmoji = itemEmojis[randomItemName]!
         
@@ -49,59 +67,64 @@ struct Cafe: View {
         collectItem() // Check if avatar collects any item after moving
     }
     
-    // Function to collect items
+    // Function to collect items and convert them into coins
     func collectItem() {
         for i in items.indices {
             if avatar.position.distance(to: items[i].position) < 20 {
                 let itemName = items[i].name
-                avatar.inventory[itemName]! += 1
+                // Convert the collected item to coins automatically
+                money += coinValue(for: itemName)
                 items.remove(at: i)  // Remove item after collection
                 break
             }
         }
     }
     
-    // Function to bake recipes
-    func bakeRecipe(recipe: Recipe) {
-        guard recipe.unlocked else { return }  // Ensure the recipe is unlocked
-        
-        var canMakeRecipe = true
-        for (ingredient, quantity) in recipe.ingredients {
-            if avatar.inventory[ingredient, default: 0] < quantity {
-                canMakeRecipe = false
-                break
-            }
-        }
-        
-        if canMakeRecipe {
-            // Deduct ingredients from inventory
-            for (ingredient, quantity) in recipe.ingredients {
-                avatar.inventory[ingredient]! -= quantity
-            }
-            
-            // Add the resulting product (e.g., cake or coffee) to inventory
-            let resultItem = recipe.name == "Cake" ? "Cake" : "Coffee"
-            avatar.inventory[resultItem]! += 1
-        }
-    }
-    
-    // Function to sell Coffee for 10 money
-    func sellCoffee() {
-        // Safely unwrap the inventory value for "Coffee"
-        if let coffeeCount = avatar.inventory["Coffee"], coffeeCount > 0 {
-            avatar.inventory["Coffee"]! -= 1  // Decrease the coffee count
-            money += 10  // Add money for selling coffee
-        } else {
-            print("No coffee to sell")
+    // Define a function to assign coin values to items
+    func coinValue(for item: String) -> Int {
+        switch item {
+        case "Flour":
+            return 5
+        case "Sugar":
+            return 5
+        case "Water":
+            return 2
+        case "Coffee Beans":
+            return 10
+        case "Milk":
+            return 3
+        case "Butter":
+            return 4
+        case "Eggs":
+            return 3
+        case "Almond Flour":
+            return 7
+        case "Yeast":
+            return 6
+        case "Fruit":
+            return 2
+        case "Ice":
+            return 1
+        case "Yogurt":
+            return 2
+        default:
+            return 1
         }
     }
     
-    // Function to sell Cake for 20 money
-    func sellCake() {
-        if avatar.inventory["Cake"]! > 0 {
-            avatar.inventory["Cake"]! -= 1
-            money += 20
+    var availableIngredients: [String] {
+        var ingredients = ["Flour", "Sugar", "Water"]
+        
+        // Add ingredients of unlocked recipes dynamically
+        for recipe in avatar.unlockedRecipes {
+            for ingredient in recipe.ingredients.keys {
+                if !ingredients.contains(ingredient) {
+                    ingredients.append(ingredient)
+                }
+            }
         }
+        
+        return ingredients
     }
     
     var body: some View {
@@ -140,52 +163,19 @@ struct Cafe: View {
             .border(Color.black, width: 2)
             .padding()
             
-            HStack {
-                Button("Bake Cake") {
-                    if let cakeRecipe = avatar.unlockedRecipes.first(where: { $0.name == "Cake" }) {
-                        bakeRecipe(recipe: cakeRecipe)
-                    }
-                }
-                Button("Bake Coffee") {
-                    // Only allow baking if the Coffee recipe is unlocked
-                    if let coffeeRecipe = avatar.unlockedRecipes.first(where: { $0.name == "Coffee" }) {
-                        bakeRecipe(recipe: coffeeRecipe)
-                    }
-                }
-            }
-            .padding()
-            
-            // Sell Buttons
-            HStack {
-                Button("Sell Coffee (10 money)") {
-                    // Disable the button if Coffee is not unlocked or if player has no coffee
-                    if avatar.unlockedRecipes.contains(where: { $0.name == "Coffee" }) {
-                        sellCoffee()
-                    }
-                }
-                .padding()
-                .background(avatar.unlockedRecipes.contains(where: { $0.name == "Coffee" }) ? Color.green : Color.gray)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                .disabled(!avatar.unlockedRecipes.contains(where: { $0.name == "Coffee" })) // Disable button if Coffee is locked
-                
-                Button("Sell Cake (20 money)") {
-                    sellCake()
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .padding()
-            
-            NavigationLink(destination: Inventory(money: $money, inventory: avatar.inventory, unlockedRecipes: avatar.unlockedRecipes)) {
+            NavigationLink(destination: Inventory(
+                money: $money,
+                inventory: avatar.inventory,
+                unlockedRecipes: avatar.unlockedRecipes,
+                availableIngredients: availableIngredients // Pass the dynamic availableIngredients array
+            )) {
                 Text("Go to Inventory")
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
+            
         }
         .onAppear {
             // Spawn random items when the game starts
@@ -208,6 +198,7 @@ struct Cafe: View {
             })
     }
 }
+
 
 extension CGPoint {
     func distance(to point: CGPoint) -> CGFloat {

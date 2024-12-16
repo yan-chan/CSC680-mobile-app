@@ -13,6 +13,18 @@ struct MainView: View {
         UINavigationBar.appearance().backgroundColor = UIColor.clear 
     }
     
+    // Define available ingredients dynamically based on unlocked recipes
+    var availableIngredients: [String] {
+        var ingredients = ["Flour", "Sugar", "Water"]
+        
+        // Add Coffee Beans if the Coffee recipe is unlocked
+        if avatar.unlockedRecipes.contains(where: { $0.name == "Coffee" }) {
+            ingredients.append("Coffee Beans")
+        }
+        
+        return ingredients
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -56,15 +68,21 @@ struct MainView: View {
                     }
                     .padding(.bottom, 50)
                     
-                    // Inventory Button Navigation
-                    NavigationLink(destination: Inventory(money: $money, inventory: avatar.inventory, unlockedRecipes: avatar.unlockedRecipes)) {
+                    // Inventory Button Navigation (styled like the others)
+                    NavigationLink(destination: Inventory(
+                        money: $money,
+                        inventory: avatar.inventory,
+                        unlockedRecipes: avatar.unlockedRecipes,
+                        availableIngredients: availableIngredients // Pass the dynamic availableIngredients array
+                    )) {
                         Text("Inventory")
                             .font(.title)
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color(hexString: "#7C6E8D"))
+                            .background(Color(hexString: "#7C6E8D")) // Same color as other buttons
                             .cornerRadius(10)
                     }
+                    .padding(.bottom, 50) // Same bottom padding as other buttons
                 }
                 .navigationTitle("Game Selection")
                 .navigationBarTitleDisplayMode(.inline) // Center the title in the navigation bar

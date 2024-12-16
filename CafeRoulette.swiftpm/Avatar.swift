@@ -1,3 +1,4 @@
+
 import SwiftUI
 
 // Avatar model to hold player data, inventory, and unlocked recipes
