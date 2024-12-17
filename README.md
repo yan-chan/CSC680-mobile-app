@@ -13,3 +13,20 @@ Cafe:
 Allows user to move their avatar around to collect ingredients.  
 User can make food and drinks based off of what recipes are unlocked and ingredients.  
 Sell food and drinks to make money.
+
+Techinal Core Features:  
+
+1. Game
+- Allows player to roam around the map freely
+- Can collect ingredients on the map to gain coins
+2. Recipe system
+- recipes can be unlocked for new ingredients to drop  
+- recipes can be gambled for  
+3. Gacha System  
+- Allows users to roll with their coin to earn more recipes  
+- Set percentage to get a new recipe
+- refund a partial credit for getting dupilcates
+4. Inventory
+- Allows players to see how many coins they have so far
+- Can see what can currently drop into the main game
+- Can see what recipes are unlocked so far  
