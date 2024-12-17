@@ -171,10 +171,11 @@ struct Cafe: View {
             )) {
                 Text("Go to Inventory")
                     .padding()
-                    .background(Color.blue)
+                    .background(Color.pink)  // Change background color to pink
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
+
             
         }
         .onAppear {
